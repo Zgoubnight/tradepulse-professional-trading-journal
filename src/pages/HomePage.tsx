@@ -1,138 +1,97 @@
-// Home page of the app.
-// Currently a demo placeholder "please wait" screen.
-// Replace this file with your actual app UI. Do not delete it to use some other file as homepage. Simply replace the entire contents of this file.
-
-import { useEffect, useMemo, useState } from 'react'
-import { Sparkles } from 'lucide-react'
-
-import { ThemeToggle } from '@/components/ThemeToggle'
-import { HAS_TEMPLATE_DEMO, TemplateDemo } from '@/components/TemplateDemo'
-import { Button } from '@/components/ui/button'
-import { Toaster, toast } from '@/components/ui/sonner'
-
-function formatDuration(ms: number): string {
-  const total = Math.max(0, Math.floor(ms / 1000))
-  const m = Math.floor(total / 60)
-  const s = total % 60
-  return `${m}:${s.toString().padStart(2, '0')}`
-}
-
+import React, { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, LayoutDashboard, PlusCircle } from 'lucide-react';
+import { addMonths, subMonths, format } from 'date-fns';
+import { StatsOverview } from '@/components/dashboard/StatsOverview';
+import { CalendarGrid } from '@/components/dashboard/CalendarGrid';
+import { EntrySheet } from '@/components/dashboard/EntrySheet';
+import { Button } from '@/components/ui/button';
+import { Toaster } from '@/components/ui/sonner';
 export function HomePage() {
-  const [coins, setCoins] = useState(0)
-  const [isRunning, setIsRunning] = useState(false)
-  const [startedAt, setStartedAt] = useState<number | null>(null)
-  const [elapsedMs, setElapsedMs] = useState(0)
-
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  // Force dark mode for financial dashboard look
   useEffect(() => {
-    if (!isRunning || startedAt === null) return
-
-    const t = setInterval(() => {
-      setElapsedMs(Date.now() - startedAt)
-    }, 250)
-
-    return () => clearInterval(t)
-  }, [isRunning, startedAt])
-
-  const formatted = useMemo(() => formatDuration(elapsedMs), [elapsedMs])
-
-  const onPleaseWait = () => {
-    setCoins((c) => c + 1)
-
-    if (!isRunning) {
-      // Resume from the current elapsed time
-      setStartedAt(Date.now() - elapsedMs)
-      setIsRunning(true)
-      toast.success('Building your app…', {
-        description: "Hang tight — we're setting everything up.",
-      })
-      return
-    }
-
-    setIsRunning(false)
-    toast.info('Still working…', {
-      description: 'You can come back in a moment.',
-    })
-  }
-
-  const onReset = () => {
-    setCoins(0)
-    setIsRunning(false)
-    setStartedAt(null)
-    setElapsedMs(0)
-    toast('Reset complete')
-  }
-
-  const onAddCoin = () => {
-    setCoins((c) => c + 1)
-    toast('Coin added')
-  }
-
+    document.documentElement.classList.add('dark');
+  }, []);
+  const handlePrevMonth = () => setCurrentDate(subMonths(currentDate, 1));
+  const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1));
+  const handleToday = () => setCurrentDate(new Date());
+  const handleSelectDate = (date: Date) => {
+    setSelectedDate(date);
+    setIsSheetOpen(true);
+  };
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-4 overflow-hidden relative">
-      <ThemeToggle />
-      <div className="absolute inset-0 bg-gradient-rainbow opacity-10 dark:opacity-20 pointer-events-none" />
-
-      <div className="text-center space-y-8 relative z-10 animate-fade-in w-full">
-        <div className="flex justify-center">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-primary floating">
-            <Sparkles className="w-8 h-8 text-white rotating" />
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <h1 className="text-5xl md:text-7xl font-display font-bold text-balance leading-tight">
-            Creating your <span className="text-gradient">app</span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto text-pretty">
-            Your application would be ready soon.
-          </p>
-        </div>
-
-        {HAS_TEMPLATE_DEMO ? (
-          <div className="max-w-5xl mx-auto text-left">
-            <TemplateDemo />
-          </div>
-        ) : (
-          <>
-            <div className="flex justify-center gap-4">
-              <Button
-                size="lg"
-                onClick={onPleaseWait}
-                className="btn-gradient px-8 py-4 text-lg font-semibold hover:-translate-y-0.5 transition-all duration-200"
-                aria-live="polite"
-              >
-                Please Wait
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-              <div>
-                Time elapsed:{' '}
-                <span className="font-medium tabular-nums text-foreground">{formatted}</span>
+    <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="py-8 md:py-10 lg:py-12">
+          {/* Header Section */}
+          <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-600 flex items-center justify-center">
+                <LayoutDashboard className="w-6 h-6 text-white" />
               </div>
               <div>
-                Coins:{' '}
-                <span className="font-medium tabular-nums text-foreground">{coins}</span>
+                <h1 className="text-2xl font-bold tracking-tight">TradePulse</h1>
+                <p className="text-zinc-500 text-sm font-medium">Professional Trading Journal</p>
               </div>
             </div>
-
-            <div className="flex justify-center gap-2">
-              <Button variant="outline" size="sm" onClick={onReset}>
-                Reset
-              </Button>
-              <Button variant="outline" size="sm" onClick={onAddCoin}>
-                Add Coin
+            <div className="flex items-center gap-2">
+              <div className="flex items-center bg-zinc-900 rounded-lg border border-white/5 p-1">
+                <Button variant="ghost" size="icon" onClick={handlePrevMonth} className="h-8 w-8 text-zinc-400 hover:text-white">
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <div className="px-4 py-1 min-w-[140px] text-center">
+                  <span className="text-sm font-bold uppercase tracking-wider">
+                    {format(currentDate, 'MMMM yyyy')}
+                  </span>
+                </div>
+                <Button variant="ghost" size="icon" onClick={handleNextMonth} className="h-8 w-8 text-zinc-400 hover:text-white">
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleToday} className="border-white/5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300">
+                Today
               </Button>
             </div>
-          </>
-        )}
+          </header>
+          {/* Stats Bar */}
+          <StatsOverview currentDate={currentDate} />
+          {/* Main Calendar */}
+          <main>
+            <CalendarGrid 
+              currentDate={currentDate} 
+              onSelectDate={handleSelectDate} 
+            />
+          </main>
+          {/* Legend/Footer */}
+          <footer className="mt-12 flex flex-wrap items-center justify-between gap-6 text-zinc-500 text-xs font-medium uppercase tracking-widest border-t border-white/5 pt-8">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span>Profit</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-rose-500" />
+                <span>Loss</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-zinc-700" />
+                <span>No Data</span>
+              </div>
+            </div>
+            <div>
+              &copy; {new Date().getFullYear()} TradePulse Journal
+            </div>
+          </footer>
+        </div>
       </div>
-
-      <footer className="absolute bottom-8 text-center text-muted-foreground/80">
-        <p>Powered by Cloudflare</p>
-      </footer>
-
-      <Toaster richColors closeButton />
+      <EntrySheet 
+        isOpen={isSheetOpen} 
+        date={selectedDate} 
+        onClose={() => setIsSheetOpen(false)} 
+      />
+      <Toaster position="bottom-right" theme="dark" richColors />
     </div>
-  )
+  );
 }

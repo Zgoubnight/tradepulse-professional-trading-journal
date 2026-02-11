@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 export function formatCurrency(amount: number): string {
-  const formatter = new Intl.NumberFormat('fr-FR', {
+  const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'EUR',
+    currency: 'USD',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
