@@ -1,11 +1,11 @@
 import React from 'react';
-import { 
-  startOfMonth, 
-  endOfMonth, 
-  startOfWeek, 
-  endOfWeek, 
-  eachDayOfInterval, 
-  format 
+import {
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  format
 } from 'date-fns';
 import { DayCell } from './DayCell';
 import { useJournalStore } from '@/store/useJournalStore';
@@ -22,7 +22,7 @@ export function CalendarGrid({ currentDate, onSelectDate }: CalendarGridProps) {
     const endDate = endOfWeek(monthEnd);
     return eachDayOfInterval({ start: startDate, end: endDate });
   }, [currentDate]);
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weekDays = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
   return (
     <div className="bg-zinc-950 border border-white/5 rounded-xl overflow-hidden shadow-2xl">
       <div className="grid grid-cols-7 border-b border-white/5 bg-zinc-900/50">

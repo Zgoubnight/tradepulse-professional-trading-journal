@@ -29,20 +29,20 @@ export function StatsOverview({ currentDate }: StatsOverviewProps) {
         <div className="relative z-10 flex flex-col h-full justify-between">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Monthly Net P/L</p>
+              <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">P/L Net Mensuel</p>
               <p className={cn("text-4xl font-mono font-bold tabular-nums tracking-tighter", getPnlColorClass(stats.netPnl))}>
                 {formatCurrency(stats.netPnl)}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Target Progress</p>
+              <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Progression Objectif</p>
               <p className="text-xl font-mono font-bold text-white">{stats.progress.toFixed(0)}%</p>
             </div>
           </div>
           <div className="space-y-2">
             <Progress value={stats.progress} className="h-1.5 bg-zinc-800" />
             <p className="text-[10px] text-zinc-500 font-medium">
-              Goal: {formatCurrency(stats.monthlyGoal)} / month
+              Objectif : {formatCurrency(stats.monthlyGoal)} / mois
             </p>
           </div>
         </div>
@@ -64,7 +64,7 @@ export function StatsOverview({ currentDate }: StatsOverviewProps) {
         </div>
         <div className="bg-zinc-900/40 border border-white/5 p-4 rounded-xl backdrop-blur-sm flex justify-between items-center">
           <div>
-            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Win Rate</p>
+            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Taux de Victoire</p>
             <p className={cn("text-2xl font-mono font-bold", stats.winRate >= 50 ? 'text-emerald-400' : 'text-rose-400')}>
               {stats.winRate.toFixed(1)}%
             </p>

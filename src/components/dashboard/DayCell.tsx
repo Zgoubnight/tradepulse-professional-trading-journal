@@ -1,5 +1,6 @@
 import React from 'react';
 import { format, isSameMonth, isToday } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { TradeEntry } from '@/store/useJournalStore';
 import { formatCurrency, getPnlColorClass } from '@/lib/currency';
@@ -15,8 +16,6 @@ export function DayCell({ date, currentDate, data, onClick }: DayCellProps) {
   const pnl = data?.pnl || 0;
   const trades = data?.tradeCount || 0;
   // Visualization logic: Range [-200, 600]
-  // Total range height = 800 units
-  // Baseline (0) is at 25% from bottom (200/800)
   const MIN_RANGE = -200;
   const MAX_RANGE = 600;
   const TOTAL_RANGE = MAX_RANGE - MIN_RANGE;
@@ -43,20 +42,20 @@ export function DayCell({ date, currentDate, data, onClick }: DayCellProps) {
         {/* Max Loss Line (-200) */}
         <div className="absolute bottom-0 w-full border-b border-rose-500/50" />
         {/* Baseline (0) */}
-        <div 
-          className="absolute w-full border-t border-zinc-700/50" 
-          style={{ bottom: `${baselineOffset}%` }} 
+        <div
+          className="absolute w-full border-t border-zinc-700/50"
+          style={{ bottom: `${baselineOffset}%` }}
         />
       </div>
       {/* Performance Bar */}
       {pnl !== 0 && (
-        <div 
+        <div
           className={cn(
             "absolute left-0 w-1 transition-all duration-500",
             isPositive ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]",
             pnl >= MAX_RANGE || pnl <= MIN_RANGE ? "w-1.5 opacity-100" : "opacity-60"
           )}
-          style={{ 
+          style={{
             height: `${barHeight}%`,
             bottom: isPositive ? `${baselineOffset}%` : `calc(${baselineOffset}% - ${barHeight}%)`
           }}
@@ -71,13 +70,13 @@ export function DayCell({ date, currentDate, data, onClick }: DayCellProps) {
       {data && (
         <div className="mt-auto w-full text-left z-10">
           <p className={cn(
-            "text-xs md:text-sm font-mono font-bold truncate leading-none mb-1", 
+            "text-xs md:text-sm font-mono font-bold truncate leading-none mb-1",
             getPnlColorClass(pnl)
           )}>
             {pnl !== 0 ? formatCurrency(pnl) : ''}
           </p>
           <p className="text-[9px] text-zinc-500 font-medium uppercase tracking-tighter">
-            {trades} {trades === 1 ? 'trade' : 'trades'}
+            {trades} {trades <= 1 ? 'trade' : 'trades'}
           </p>
         </div>
       )}

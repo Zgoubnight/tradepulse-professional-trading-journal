@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, LayoutDashboard } from 'lucide-react';
 import { addMonths, subMonths, format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { StatsOverview } from '@/components/dashboard/StatsOverview';
 import { CalendarGrid } from '@/components/dashboard/CalendarGrid';
 import { EntrySheet } from '@/components/dashboard/EntrySheet';
@@ -35,7 +36,7 @@ export function HomePage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold tracking-tight">TradePulse</h1>
-                <p className="text-zinc-500 text-sm font-medium uppercase tracking-widest">Performance Terminal</p>
+                <p className="text-zinc-500 text-sm font-medium uppercase tracking-widest">Terminal de Performance</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -45,7 +46,7 @@ export function HomePage() {
                 </Button>
                 <div className="px-4 py-1 min-w-[140px] text-center">
                   <span className="text-sm font-bold uppercase tracking-widest">
-                    {format(currentDate, 'MMMM yyyy')}
+                    {format(currentDate, 'MMMM yyyy', { locale: fr })}
                   </span>
                 </div>
                 <Button variant="ghost" size="icon" onClick={handleNextMonth} className="h-8 w-8 text-zinc-400 hover:text-white">
@@ -53,7 +54,7 @@ export function HomePage() {
                 </Button>
               </div>
               <Button variant="outline" size="sm" onClick={handleToday} className="border-white/10 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300">
-                Today
+                Aujourd'hui
               </Button>
             </div>
           </header>
@@ -77,15 +78,15 @@ export function HomePage() {
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-0.5 bg-emerald-500" />
-                <span>Target (+600€)</span>
+                <span>Objectif (+600€)</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-0.5 bg-rose-500" />
-                <span>Max Loss (-200€)</span>
+                <span>Perte Max (-200€)</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-0.5 bg-zinc-700" />
-                <span>Baseline</span>
+                <span>Base</span>
               </div>
             </div>
             <div>
