@@ -8,6 +8,7 @@ export interface TradeEntry {
 }
 interface JournalState {
   entries: Record<string, TradeEntry>;
+  version: number;
   setEntry: (date: string, entry: Omit<TradeEntry, 'date'>) => void;
   removeEntry: (date: string) => void;
 }
@@ -15,8 +16,10 @@ export const useJournalStore = create<JournalState>()(
   persist(
     (set) => ({
       entries: {},
+      version: 0,
       setEntry: (date, entry) =>
         set((state) => ({
+          version: state.version + 1,
           entries: {
             ...state.entries,
             [date]: { ...entry, date },
@@ -26,11 +29,15 @@ export const useJournalStore = create<JournalState>()(
         set((state) => {
           const newEntries = { ...state.entries };
           delete newEntries[date];
-          return { entries: newEntries };
+          return { 
+            entries: newEntries,
+            version: state.version + 1 
+          };
         }),
     }),
     {
       name: 'tradepulse-journal-storage',
+      partialize: (state) => ({ entries: state.entries, version: state.version }),
     }
   )
 );
