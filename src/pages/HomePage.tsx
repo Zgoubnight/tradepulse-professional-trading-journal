@@ -6,7 +6,6 @@ import { CalendarGrid } from '@/components/dashboard/CalendarGrid';
 import { EntrySheet } from '@/components/dashboard/EntrySheet';
 import { YearlyChart } from '@/components/dashboard/YearlyChart';
 import { Button } from '@/components/ui/button';
-import { Toaster } from '@/components/ui/sonner';
 export function HomePage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -14,12 +13,15 @@ export function HomePage() {
   useEffect(() => {
     document.documentElement.classList.add('dark');
   }, []);
-  const handlePrevMonth = () => setCurrentDate(subMonths(currentDate, 1));
-  const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1));
+  const handlePrevMonth = () => setCurrentDate(prev => subMonths(prev, 1));
+  const handleNextMonth = () => setCurrentDate(prev => addMonths(prev, 1));
   const handleToday = () => setCurrentDate(new Date());
   const handleSelectDate = (date: Date) => {
     setSelectedDate(date);
     setIsSheetOpen(true);
+  };
+  const handleCloseSheet = () => {
+    setIsSheetOpen(false);
   };
   return (
     <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
@@ -95,9 +97,8 @@ export function HomePage() {
       <EntrySheet
         isOpen={isSheetOpen}
         date={selectedDate}
-        onClose={() => setIsSheetOpen(false)}
+        onClose={handleCloseSheet}
       />
-      <Toaster position="bottom-right" theme="dark" richColors />
     </div>
   );
 }
