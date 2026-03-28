@@ -19,7 +19,7 @@ export function EntrySheet({ date, isOpen, onClose }: EntrySheetProps) {
   const [tradeCount, setTradeCount] = useState('');
   const [notes, setNotes] = useState('');
   useEffect(() => {
-    if (date) {
+    if (date && isOpen) {
       const dateKey = format(date, 'yyyy-MM-dd');
       const existing = entries[dateKey];
       if (existing) {
@@ -51,59 +51,74 @@ export function EntrySheet({ date, isOpen, onClose }: EntrySheetProps) {
   };
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent className="bg-zinc-950 border-zinc-800 text-white w-full sm:max-w-md">
+      <SheetContent className="bg-zinc-950 border-zinc-900 text-white w-full sm:max-w-md">
         <SheetHeader>
-          <SheetTitle className="text-white">
+          <SheetTitle className="text-white text-xl font-bold">
             {date ? format(date, 'MMMM do, yyyy') : 'Edit Entry'}
           </SheetTitle>
           <SheetDescription className="text-zinc-500">
-            Log your trading results for this day.
+            Log your daily P/L and trading volume.
           </SheetDescription>
         </SheetHeader>
         <div className="space-y-6 py-8">
           <div className="space-y-2">
-            <Label htmlFor="pnl" className="text-zinc-400">Net P/L ($)</Label>
+            <Label htmlFor="pnl" className="text-zinc-400 text-xs font-bold uppercase tracking-widest">Net P/L (€)</Label>
             <Input
               id="pnl"
               type="number"
-              placeholder="e.g. 500 or -250"
+              placeholder="e.g. 600 or -200"
               value={pnl}
               onChange={(e) => setPnl(e.target.value)}
-              className="bg-zinc-900 border-zinc-800 focus:ring-emerald-500/50"
+              className="bg-zinc-900 border-zinc-800 focus:ring-emerald-500/50 h-12 text-lg font-mono"
             />
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-[10px] h-7 border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/10"
+                onClick={() => setPnl('600')}
+              >
+                +600€ Target
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-[10px] h-7 border-rose-500/20 text-rose-500 hover:bg-rose-500/10"
+                onClick={() => setPnl('-200')}
+              >
+                -200€ Max Loss
+              </Button>
+            </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="trades" className="text-zinc-400">Total Trades</Label>
+            <Label htmlFor="trades" className="text-zinc-400 text-xs font-bold uppercase tracking-widest">Total Trades</Label>
             <Input
               id="trades"
               type="number"
               placeholder="0"
               value={tradeCount}
               onChange={(e) => setTradeCount(e.target.value)}
-              className="bg-zinc-900 border-zinc-800 focus:ring-emerald-500/50"
+              className="bg-zinc-900 border-zinc-800 focus:ring-emerald-500/50 h-12 font-mono"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="notes" className="text-zinc-400">Daily Notes</Label>
+            <Label htmlFor="notes" className="text-zinc-400 text-xs font-bold uppercase tracking-widest">Trade Notes</Label>
             <Textarea
               id="notes"
-              placeholder="What happened today?"
+              placeholder="Market conditions, mistakes, or wins..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="bg-zinc-900 border-zinc-800 min-h-[120px] focus:ring-emerald-500/50"
+              className="bg-zinc-900 border-zinc-800 min-h-[140px] focus:ring-emerald-500/50 resize-none"
             />
           </div>
         </div>
-        <SheetFooter className="flex-col sm:flex-row gap-2">
-          <Button variant="destructive" onClick={handleDelete} className="w-full sm:w-auto">
-            Delete
+        <SheetFooter className="flex-col sm:flex-row gap-3 pt-4 border-t border-white/5">
+          <Button variant="ghost" onClick={handleDelete} className="w-full sm:w-auto text-rose-500 hover:text-rose-400 hover:bg-rose-500/10">
+            Delete Record
           </Button>
           <div className="flex-1" />
-          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto border-zinc-800">
-            Cancel
-          </Button>
-          <Button onClick={handleSave} className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white">
-            Save Entry
+          <Button onClick={handleSave} className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-8">
+            Save Performance
           </Button>
         </SheetFooter>
       </SheetContent>

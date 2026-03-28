@@ -1,19 +1,15 @@
 import React, { useMemo } from 'react';
-import {
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  ReferenceArea, Area, Line, ComposedChart
+import { 
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  ReferenceLine, ReferenceArea, Line, ComposedChart
 } from 'recharts';
 import { useJournalStore } from '@/store/useJournalStore';
 import { format, parseISO, isSameYear, getMonth, startOfYear, endOfYear, eachMonthOfInterval } from 'date-fns';
-import { fr } from 'date-fns/locale';
 import { formatCurrency } from '@/lib/currency';
 export function YearlyChart() {
-  // Subscribe ONLY to the version primitive to trigger re-renders.
-  const version = useJournalStore(s => s.version);
+  const entries = useJournalStore(s => s.entries);
   const currentYear = new Date().getFullYear();
   const data = useMemo(() => {
-    // Access state directly to compute derived data without heavy subscriptions
-    const { entries } = useJournalStore.getState();
     const months = eachMonthOfInterval({
       start: startOfYear(new Date(currentYear, 0, 1)),
       end: endOfYear(new Date(currentYear, 0, 1))
@@ -22,7 +18,7 @@ export function YearlyChart() {
     let cumulativeActual = 0;
     return months.map((month) => {
       const monthIdx = getMonth(month);
-      const monthLabel = format(month, 'MMM', { locale: fr });
+      const monthLabel = format(month, 'MMM');
       const monthlySum = Object.values(entries)
         .filter(e => {
           const d = parseISO(e.date);
@@ -38,8 +34,7 @@ export function YearlyChart() {
         isCurrent: getMonth(new Date()) === monthIdx
       };
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [version, currentYear]);
+  }, [entries, currentYear]);
   const currentMonthData = data.find(d => d.isCurrent);
   const deltaVsTarget = currentMonthData 
     ? ((currentMonthData.actual / currentMonthData.target) * 100).toFixed(0)
@@ -48,12 +43,12 @@ export function YearlyChart() {
     <div className="bg-zinc-900/30 border border-white/5 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white">Croissance Annuelle vs Objectifs</h2>
-          <p className="text-zinc-500 text-sm">Objectif {formatCurrency(13200)} / mois sur +600€/jour</p>
+          <h2 className="text-xl font-bold text-white">Yearly Growth vs Goals</h2>
+          <p className="text-zinc-500 text-sm">Targeting {formatCurrency(13200)} / month based on daily +600€</p>
         </div>
         <div className="bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg">
           <span className="text-emerald-400 text-xs font-bold uppercase tracking-wider">
-            Mois Courant : {deltaVsTarget}% de l'Objectif
+            Current Month: {deltaVsTarget}% of Goal
           </span>
         </div>
       </div>
@@ -71,7 +66,7 @@ export function YearlyChart() {
               dataKey="name" 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: '#71717a', fontSize: 12 }}
+              tick={{ fill: '#71717a', fontSize: 12 }} 
               dy={10}
             />
             <YAxis 
@@ -84,18 +79,16 @@ export function YearlyChart() {
               contentStyle={{ backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '8px' }}
               itemStyle={{ fontSize: '12px' }}
               formatter={(val: number) => [formatCurrency(val), '']}
-              labelFormatter={(label) => `Mois: ${label}`}
             />
             <ReferenceArea 
-              x1={format(new Date(), 'MMM', { locale: fr })} 
-              x2={format(new Date(), 'MMM', { locale: fr })} 
+              x1={format(new Date(), 'MMM')} 
+              x2={format(new Date(), 'MMM')} 
               strokeOpacity={0.3} 
-              fill="#27272a"
+              fill="#27272a" 
             />
             <Area 
               type="monotone" 
               dataKey="actual" 
-              name="Réel"
               stroke="#3b82f6" 
               fillOpacity={1} 
               fill="url(#colorActual)" 
@@ -104,36 +97,34 @@ export function YearlyChart() {
             <Line 
               type="monotone" 
               dataKey="target" 
-              name="Objectif"
               stroke="#10b981" 
               strokeDasharray="5 5" 
-              dot={false}
+              dot={false} 
               strokeWidth={1.5}
             />
             <Line 
               type="monotone" 
               dataKey="cumulative" 
-              name="Cumulé"
               stroke="#f59e0b" 
-              dot={{ r: 2, fill: '#f59e0b' }}
+              dot={{ r: 2, fill: '#f59e0b' }} 
               strokeWidth={1}
               opacity={0.5}
             />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
-      <div className="mt-6 flex flex-wrap gap-6">
+      <div className="mt-6 flex gap-6">
         <div className="flex items-center gap-2">
           <div className="w-3 h-1 bg-blue-500 rounded-full" />
-          <span className="text-xs text-zinc-400">Mensuel Réel</span>
+          <span className="text-xs text-zinc-400">Monthly Actual</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-1 bg-emerald-500 border-t border-dashed border-zinc-900" />
-          <span className="text-xs text-zinc-400">Objectif Mensuel</span>
+          <span className="text-xs text-zinc-400">Monthly Target</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-1 bg-amber-500 rounded-full" />
-          <span className="text-xs text-zinc-400">Cumulé Année</span>
+          <span className="text-xs text-zinc-400">Cumulative YTD</span>
         </div>
       </div>
     </div>
