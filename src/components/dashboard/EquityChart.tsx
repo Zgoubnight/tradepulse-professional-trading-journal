@@ -16,43 +16,63 @@ interface EquityChartProps {
 export function EquityChart({ data, accountCount }: EquityChartProps) {
   if (!data || data.length === 0) return null;
   return (
-    <div className="h-[400px] w-full mt-8 bg-zinc-900/20 rounded-xl p-4 border border-white/5">
+    <div className="h-[450px] w-full p-4">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-          <XAxis 
-            dataKey="tradeIndex" 
-            stroke="#71717a" 
-            fontSize={10} 
-            tickLine={false} 
+        <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#18181b" vertical={false} />
+          <XAxis
+            dataKey="tradeIndex"
+            stroke="#3f3f46"
+            fontSize={9}
+            tickLine={false}
             axisLine={false}
-            label={{ value: 'Nombre de Trades', position: 'insideBottom', offset: -5, fill: '#71717a', fontSize: 10 }}
+            label={{ value: 'Séquence de Trades', position: 'insideBottom', offset: -10, fill: '#52525b', fontSize: 9, fontWeight: 'bold' }}
           />
-          <YAxis 
-            stroke="#71717a" 
-            fontSize={10} 
-            tickLine={false} 
+          <YAxis
+            stroke="#3f3f46"
+            fontSize={9}
+            tickLine={false}
             axisLine={false}
+            domain={[0, 'auto']}
             tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`}
           />
-          <Tooltip 
-            contentStyle={{ backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '8px' }}
-            itemStyle={{ fontSize: '10px' }}
-            labelStyle={{ color: '#71717a', marginBottom: '4px' }}
+          <Tooltip
+            contentStyle={{ backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '12px', padding: '12px' }}
+            itemStyle={{ fontSize: '10px', padding: '2px 0' }}
+            labelStyle={{ color: '#71717a', marginBottom: '8px', fontSize: '10px', fontWeight: 'bold' }}
             formatter={(val: number) => [formatCurrency(val), 'Solde']}
+            labelFormatter={(label) => `Trade #${label}`}
           />
-          {Array.from({ length: accountCount }).map((_, i) => (
-            <Line
-              key={i}
-              type="monotone"
-              dataKey={`acc${i}`}
-              stroke={i === 0 ? "#10b981" : "#3b82f6"}
-              strokeWidth={i === 0 ? 2 : 1}
-              dot={false}
-              opacity={i === 0 ? 0.8 : 0.15}
-              isAnimationActive={false}
-            />
-          ))}
+          {/* Main Account Lines */}
+          {Array.from({ length: accountCount }).map((_, i) => {
+            const finalVal = data[data.length - 1][`acc${i}`];
+            const isRuined = data[data.length - 1][`status${i}`] === 'ruined';
+            return (
+              <Line
+                key={i}
+                type="monotone"
+                dataKey={`acc${i}`}
+                stroke={isRuined ? "#f43f5e" : "#10b981"}
+                strokeWidth={1}
+                dot={false}
+                opacity={0.15}
+                isAnimationActive={false}
+                connectNulls
+              />
+            );
+          })}
+          {/* Median Path Overlay */}
+          <Line
+            type="monotone"
+            dataKey="medianSurvivor"
+            name="Médiane des Survivants"
+            stroke="#ffffff"
+            strokeWidth={3}
+            dot={false}
+            opacity={1}
+            isAnimationActive={false}
+            strokeDasharray="5 5"
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>

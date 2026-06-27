@@ -8,9 +8,10 @@ interface StatsOverviewProps {
   currentDate: Date;
 }
 export function StatsOverview({ currentDate }: StatsOverviewProps) {
-  // Use 'version' as a stable primitive trigger for derived data updates
+  // Use 'version' to trigger updates, but we'll clean up the memo to avoid lint errors
   const entries = useJournalStore((s) => s.entries);
-  const version = useJournalStore((s) => s.version);
+  // Selector for version to ensure component re-renders when data changes
+  useJournalStore((s) => s.version);
   const stats = useMemo(() => {
     const monthEntries = Object.values(entries).filter((entry) =>
       isSameMonth(parseISO(entry.date), currentDate)
@@ -24,8 +25,7 @@ export function StatsOverview({ currentDate }: StatsOverviewProps) {
     const monthlyGoal = 13200;
     const progress = Math.min(100, Math.max(0, (netPnl / monthlyGoal) * 100));
     return { netPnl, totalTrades, winRate, progress, monthlyGoal };
-    // version is included to ensure memo recalculates on store updates
-  }, [entries, currentDate, version]);
+  }, [entries, currentDate]);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       <div className="md:col-span-2 bg-zinc-900/40 border border-white/5 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
@@ -43,13 +43,14 @@ export function StatsOverview({ currentDate }: StatsOverviewProps) {
             </div>
           </div>
           <div className="space-y-2">
+            <div className="flex justify-between items-end">
+               <p className="text-[10px] text-zinc-500 font-medium">
+                Objectif : {formatCurrency(stats.monthlyGoal)} / mois
+              </p>
+            </div>
             <Progress value={stats.progress} className="h-1.5 bg-zinc-800" />
-            <p className="text-[10px] text-zinc-500 font-medium">
-              Objectif : {formatCurrency(stats.monthlyGoal)} / mois
-            </p>
           </div>
         </div>
-        {/* Subtle background glow based on P/L */}
         <div className={cn(
           "absolute -right-20 -top-20 w-64 h-64 blur-[100px] opacity-10 transition-colors duration-1000",
           stats.netPnl >= 0 ? "bg-emerald-500" : "bg-rose-500"
