@@ -10,14 +10,13 @@ interface DayCellProps {
 }
 export function DayCell({ date, currentDate, onClick }: DayCellProps) {
   const dateKey = format(date, 'yyyy-MM-dd');
-  // Strict primitive selectors to prevent re-render loops and dispatcher loss
-  const entries = useJournalStore((s) => s.entries);
-  const data = entries[dateKey];
+  // Strict primitive selectors to prevent dispatcher loss and re-render loops
+  const pnl = useJournalStore((s) => s.entries[dateKey]?.pnl ?? 0);
+  const trades = useJournalStore((s) => s.entries[dateKey]?.tradeCount ?? 0);
+  const notes = useJournalStore((s) => s.entries[dateKey]?.notes ?? '');
   const isCurrentMonth = isSameMonth(date, currentDate);
   const today = isToday(date);
-  const pnl = data?.pnl ?? 0;
-  const trades = data?.tradeCount ?? 0;
-  const hasNotes = !!data?.notes;
+  const hasNotes = notes.length > 0;
   // Visualization logic: Range [-200, 600]
   const MIN_RANGE = -200;
   const MAX_RANGE = 600;
@@ -71,19 +70,21 @@ export function DayCell({ date, currentDate, onClick }: DayCellProps) {
       )}>
         {format(date, 'd')}
       </span>
-      {data && (
-        <div className="mt-auto w-full text-left z-10">
+      <div className="mt-auto w-full text-left z-10">
+        {pnl !== 0 && (
           <p className={cn(
             "text-xs md:text-sm font-mono font-bold truncate leading-none mb-1",
             getPnlColorClass(pnl)
           )}>
-            {pnl !== 0 ? formatCurrency(pnl) : ''}
+            {formatCurrency(pnl)}
           </p>
+        )}
+        {trades > 0 && (
           <p className="text-[9px] text-zinc-500 font-medium uppercase tracking-tighter">
             {trades} {trades <= 1 ? 'trade' : 'trades'}
           </p>
-        </div>
-      )}
+        )}
+      </div>
       {hasNotes && (
         <div className="absolute top-3 right-3 w-1 h-1 rounded-full bg-zinc-700 group-hover:bg-white transition-colors" />
       )}

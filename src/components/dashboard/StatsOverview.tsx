@@ -8,7 +8,9 @@ interface StatsOverviewProps {
   currentDate: Date;
 }
 export function StatsOverview({ currentDate }: StatsOverviewProps) {
+  // Use 'version' as a stable primitive trigger for derived data updates
   const entries = useJournalStore((s) => s.entries);
+  const version = useJournalStore((s) => s.version);
   const stats = useMemo(() => {
     const monthEntries = Object.values(entries).filter((entry) =>
       isSameMonth(parseISO(entry.date), currentDate)
@@ -22,7 +24,8 @@ export function StatsOverview({ currentDate }: StatsOverviewProps) {
     const monthlyGoal = 13200;
     const progress = Math.min(100, Math.max(0, (netPnl / monthlyGoal) * 100));
     return { netPnl, totalTrades, winRate, progress, monthlyGoal };
-  }, [entries, currentDate]);
+    // version is included to ensure memo recalculates on store updates
+  }, [entries, currentDate, version]);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       <div className="md:col-span-2 bg-zinc-900/40 border border-white/5 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
