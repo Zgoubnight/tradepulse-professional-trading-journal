@@ -8,13 +8,11 @@ import {
   format
 } from 'date-fns';
 import { DayCell } from './DayCell';
-import { useJournalStore } from '@/store/useJournalStore';
 interface CalendarGridProps {
   currentDate: Date;
   onSelectDate: (date: Date) => void;
 }
 export function CalendarGrid({ currentDate, onSelectDate }: CalendarGridProps) {
-  const entries = useJournalStore((s) => s.entries);
   const days = React.useMemo(() => {
     const monthStart = startOfMonth(currentDate);
     const monthEnd = endOfMonth(currentDate);
@@ -40,7 +38,6 @@ export function CalendarGrid({ currentDate, onSelectDate }: CalendarGridProps) {
               key={dateKey}
               date={day}
               currentDate={currentDate}
-              data={entries[dateKey]}
               onClick={onSelectDate}
             />
           );
