@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,9 +13,13 @@ interface EntrySheetProps {
   onClose: () => void;
 }
 export function EntrySheet({ date, isOpen, onClose }: EntrySheetProps) {
-  const entries = useJournalStore((s) => s.entries);
+  const version = useJournalStore((s) => s.version);
   const setEntry = useJournalStore((s) => s.setEntry);
   const removeEntry = useJournalStore((s) => s.removeEntry);
+  const entries = useMemo(() => {
+    return useJournalStore.getState().entries;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [version]);
   const [pnl, setPnl] = useState('');
   const [tradeCount, setTradeCount] = useState('');
   const [notes, setNotes] = useState('');
