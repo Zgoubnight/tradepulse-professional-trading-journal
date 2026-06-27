@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, LayoutDashboard, Calculator } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutDashboard, Calculator, TrendingUp } from 'lucide-react';
 import { addMonths, subMonths, format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { StatsOverview } from '@/components/dashboard/StatsOverview';
@@ -7,6 +7,7 @@ import { CalendarGrid } from '@/components/dashboard/CalendarGrid';
 import { EntrySheet } from '@/components/dashboard/EntrySheet';
 import { YearlyChart } from '@/components/dashboard/YearlyChart';
 import { SimulatorTab } from '@/components/dashboard/SimulatorTab';
+import { ScalingPlanTab } from '@/components/dashboard/ScalingPlanTab';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 export function HomePage() {
@@ -49,6 +50,10 @@ export function HomePage() {
                   <LayoutDashboard className="w-4 h-4" />
                   Journal de Bord
                 </TabsTrigger>
+                <TabsTrigger value="scaling" className="data-[state=active]:bg-zinc-800 data-[state=active]:text-emerald-400 px-6 gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  Scaling Plan
+                </TabsTrigger>
                 <TabsTrigger value="simulator" className="data-[state=active]:bg-zinc-800 data-[state=active]:text-emerald-400 px-6 gap-2">
                   <Calculator className="w-4 h-4" />
                   Simulateur Monte Carlo
@@ -88,6 +93,9 @@ export function HomePage() {
                   <YearlyChart />
                 </section>
               </main>
+            </TabsContent>
+            <TabsContent value="scaling" className="mt-0 focus-visible:outline-none">
+              <ScalingPlanTab />
             </TabsContent>
             <TabsContent value="simulator" className="mt-0 focus-visible:outline-none">
               <SimulatorTab />

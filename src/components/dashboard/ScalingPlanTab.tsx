@@ -7,13 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  TrendingUp,
-  RotateCcw,
-  ChevronUp,
-  ChevronDown,
-  Target,
-  History,
+import { 
+  TrendingUp, 
+  RotateCcw, 
+  ChevronUp, 
+  ChevronDown, 
+  Target, 
+  History, 
   Calculator,
   Undo2,
   CheckCircle2,
@@ -28,21 +28,19 @@ export function ScalingPlanTab() {
   const levelIndex = useScalingStore(s => s.levelIndex);
   const winStreak = useScalingStore(s => s.winStreak);
   const lossStreak = useScalingStore(s => s.lossStreak);
+  const history = useScalingStore(s => s.history);
   const version = useScalingStore(s => s.version);
   const initPlan = useScalingStore(s => s.initPlan);
   const resetPlan = useScalingStore(s => s.resetPlan);
   const addTrade = useScalingStore(s => s.addTrade);
   const undoLast = useScalingStore(s => s.undoLast);
-  const history = useMemo(() => {
-    return useScalingStore.getState().history;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [version]);
   const [startingCapitalInput, setStartingCapitalInput] = useState('100000');
   const [tradeAmountInput, setTradeAmountInput] = useState('');
   const [slInput, setSlInput] = useState('10');
   const [pipValueInput, setPipValueInput] = useState('10');
   const currentRiskPercent = RISK_LADDER[levelIndex];
   const advisedRiskAmount = (capital * currentRiskPercent) / 100;
+  // Position Size Calculation
   const lotSize = useMemo(() => {
     const sl = parseFloat(slInput) || 0;
     const pipVal = parseFloat(pipValueInput) || 0;
@@ -51,25 +49,26 @@ export function ScalingPlanTab() {
   }, [advisedRiskAmount, slInput, pipValueInput]);
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-12">
+      {/* Configuration Header */}
       <div className="flex flex-col md:flex-row items-end gap-4 bg-zinc-900/40 border border-white/5 p-6 rounded-2xl backdrop-blur-md">
         <div className="space-y-2 flex-1">
           <Label className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Capital de Départ (EUR)</Label>
-          <Input
-            type="number"
-            value={startingCapitalInput}
+          <Input 
+            type="number" 
+            value={startingCapitalInput} 
             onChange={(e) => setStartingCapitalInput(e.target.value)}
             className="bg-zinc-950 border-white/10 h-10 font-mono text-white"
           />
         </div>
         <div className="flex gap-2 w-full md:w-auto">
-          <Button
+          <Button 
             onClick={() => initPlan(parseFloat(startingCapitalInput) || 100000)}
             className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex-1 md:flex-none px-6"
           >
             Appliquer
           </Button>
-          <Button
-            variant="outline"
+          <Button 
+            variant="outline" 
             onClick={resetPlan}
             className="border-white/10 text-zinc-400 hover:text-white hover:bg-zinc-800 flex-1 md:flex-none"
           >
@@ -79,6 +78,7 @@ export function ScalingPlanTab() {
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Progression Panel */}
         <Card className="bg-zinc-900/40 border-white/5 backdrop-blur-md">
           <CardHeader className="border-b border-white/5 flex flex-row items-center justify-between py-4">
             <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
@@ -90,6 +90,7 @@ export function ScalingPlanTab() {
             </Badge>
           </CardHeader>
           <CardContent className="pt-8 space-y-8">
+            {/* Current Risk Display */}
             <div className="flex flex-col items-center justify-center text-center space-y-2">
               <span className="text-6xl font-black font-mono tracking-tighter text-white">
                 {currentRiskPercent.toFixed(1)}%
@@ -103,18 +104,20 @@ export function ScalingPlanTab() {
                 </span>
               </div>
             </div>
+            {/* Level Pills */}
             <div className="flex justify-between gap-1">
               {RISK_LADDER.map((risk, idx) => (
-                <div
+                <div 
                   key={idx}
                   className={cn(
                     "flex-1 h-2 rounded-full transition-all duration-300",
-                    idx === levelIndex ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" :
+                    idx === levelIndex ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : 
                     idx < levelIndex ? "bg-emerald-900/40" : "bg-zinc-800"
                   )}
                 />
               ))}
             </div>
+            {/* Progression Streaks */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
               <div className="space-y-3">
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
@@ -133,6 +136,7 @@ export function ScalingPlanTab() {
             </div>
           </CardContent>
         </Card>
+        {/* Position Size Calculator */}
         <Card className="bg-zinc-900/40 border-white/5 backdrop-blur-md">
           <CardHeader className="border-b border-white/5 py-4">
             <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
@@ -144,18 +148,18 @@ export function ScalingPlanTab() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Stop Loss (Pips/Pts)</Label>
-                <Input
-                  type="number"
-                  value={slInput}
+                <Input 
+                  type="number" 
+                  value={slInput} 
                   onChange={(e) => setSlInput(e.target.value)}
                   className="bg-zinc-950 border-white/10 font-mono"
                 />
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Valeur du Pip (1 lot)</Label>
-                <Input
-                  type="number"
-                  value={pipValueInput}
+                <Input 
+                  type="number" 
+                  value={pipValueInput} 
                   onChange={(e) => setPipValueInput(e.target.value)}
                   className="bg-zinc-950 border-white/10 font-mono"
                 />
@@ -174,7 +178,9 @@ export function ScalingPlanTab() {
           </CardContent>
         </Card>
       </div>
+      {/* Trade Logger & History */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Logger Section */}
         <Card className="bg-zinc-900/40 border-white/5 backdrop-blur-md xl:col-span-1">
           <CardHeader className="border-b border-white/5">
             <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
@@ -185,16 +191,16 @@ export function ScalingPlanTab() {
           <CardContent className="pt-6 space-y-6">
             <div className="space-y-2">
               <Label className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Résultat P/L (€)</Label>
-              <Input
-                type="number"
-                placeholder="Ex: 500 ou -200"
+              <Input 
+                type="number" 
+                placeholder="Ex: 500 ou -200" 
                 value={tradeAmountInput}
                 onChange={(e) => setTradeAmountInput(e.target.value)}
                 className="bg-zinc-950 border-white/10 h-12 text-xl font-mono text-center"
               />
             </div>
             <div className="grid grid-cols-1 gap-2">
-              <Button
+              <Button 
                 onClick={() => {
                   addTrade('win', parseFloat(tradeAmountInput) || 0);
                   setTradeAmountInput('');
@@ -203,7 +209,7 @@ export function ScalingPlanTab() {
               >
                 <CheckCircle2 className="w-4 h-4" /> Gagnant +
               </Button>
-              <Button
+              <Button 
                 onClick={() => {
                   addTrade('loss', parseFloat(tradeAmountInput) || 0);
                   setTradeAmountInput('');
@@ -212,7 +218,7 @@ export function ScalingPlanTab() {
               >
                 <XCircle className="w-4 h-4" /> Perdant -
               </Button>
-              <Button
+              <Button 
                 onClick={() => {
                   addTrade('be', parseFloat(tradeAmountInput) || 0);
                   setTradeAmountInput('');
@@ -222,9 +228,9 @@ export function ScalingPlanTab() {
               >
                 <MinusCircle className="w-4 h-4" /> Break-even
               </Button>
-              <Button
+              <Button 
                 onClick={undoLast}
-                variant="ghost"
+                variant="ghost" 
                 className="text-zinc-500 hover:text-white mt-2 text-[10px] uppercase font-bold tracking-widest h-8"
               >
                 <Undo2 className="w-3 h-3 mr-2" /> Annuler dernier trade
@@ -232,6 +238,7 @@ export function ScalingPlanTab() {
             </div>
           </CardContent>
         </Card>
+        {/* History Ledger */}
         <Card className="bg-zinc-900/40 border-white/5 backdrop-blur-md xl:col-span-2">
           <CardHeader className="border-b border-white/5 py-4">
             <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
@@ -265,7 +272,7 @@ export function ScalingPlanTab() {
                           {format(new Date(trade.timestamp), 'dd/MM HH:mm', { locale: fr })}
                         </td>
                         <td className="px-6 py-4">
-                          <Badge
+                          <Badge 
                             className={cn(
                               "text-[9px] font-bold uppercase tracking-tighter",
                               trade.type === 'win' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
