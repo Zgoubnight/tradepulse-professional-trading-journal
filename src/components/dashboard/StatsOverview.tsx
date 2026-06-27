@@ -8,11 +8,14 @@ interface StatsOverviewProps {
   currentDate: Date;
 }
 export function StatsOverview({ currentDate }: StatsOverviewProps) {
-  // Use 'version' to trigger updates, but we'll clean up the memo to avoid lint errors
-  const entries = useJournalStore((s) => s.entries);
-  // Selector for version to ensure component re-renders when data changes
-  useJournalStore((s) => s.version);
+  // Subscribe ONLY to the version primitive to trigger re-renders.
+  // This avoids subscribing to the entries object reference which can cause 
+  // stability issues in complex render cycles (dispatcher loss).
+  const version = useJournalStore((s) => s.version);
   const stats = useMemo(() => {
+    // Access the state directly inside useMemo to compute derived data
+    // based on the version trigger.
+    const { entries } = useJournalStore.getState();
     const monthEntries = Object.values(entries).filter((entry) =>
       isSameMonth(parseISO(entry.date), currentDate)
     );
@@ -25,7 +28,8 @@ export function StatsOverview({ currentDate }: StatsOverviewProps) {
     const monthlyGoal = 13200;
     const progress = Math.min(100, Math.max(0, (netPnl / monthlyGoal) * 100));
     return { netPnl, totalTrades, winRate, progress, monthlyGoal };
-  }, [entries, currentDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [version, currentDate]);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       <div className="md:col-span-2 bg-zinc-900/40 border border-white/5 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">

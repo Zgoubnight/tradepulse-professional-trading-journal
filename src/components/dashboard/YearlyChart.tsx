@@ -8,9 +8,12 @@ import { format, parseISO, isSameYear, getMonth, startOfYear, endOfYear, eachMon
 import { fr } from 'date-fns/locale';
 import { formatCurrency } from '@/lib/currency';
 export function YearlyChart() {
-  const entries = useJournalStore(s => s.entries);
+  // Subscribe ONLY to the version primitive to trigger re-renders.
+  const version = useJournalStore(s => s.version);
   const currentYear = new Date().getFullYear();
   const data = useMemo(() => {
+    // Access state directly to compute derived data without heavy subscriptions
+    const { entries } = useJournalStore.getState();
     const months = eachMonthOfInterval({
       start: startOfYear(new Date(currentYear, 0, 1)),
       end: endOfYear(new Date(currentYear, 0, 1))
@@ -35,9 +38,10 @@ export function YearlyChart() {
         isCurrent: getMonth(new Date()) === monthIdx
       };
     });
-  }, [entries, currentYear]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [version, currentYear]);
   const currentMonthData = data.find(d => d.isCurrent);
-  const deltaVsTarget = currentMonthData
+  const deltaVsTarget = currentMonthData 
     ? ((currentMonthData.actual / currentMonthData.target) * 100).toFixed(0)
     : "0";
   return (
@@ -63,54 +67,54 @@ export function YearlyChart() {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-            <XAxis
-              dataKey="name"
-              axisLine={false}
-              tickLine={false}
+            <XAxis 
+              dataKey="name" 
+              axisLine={false} 
+              tickLine={false} 
               tick={{ fill: '#71717a', fontSize: 12 }}
               dy={10}
             />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
+            <YAxis 
+              axisLine={false} 
+              tickLine={false} 
               tick={{ fill: '#71717a', fontSize: 10 }}
               tickFormatter={(val) => `${val/1000}k`}
             />
-            <Tooltip
+            <Tooltip 
               contentStyle={{ backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '8px' }}
               itemStyle={{ fontSize: '12px' }}
               formatter={(val: number) => [formatCurrency(val), '']}
               labelFormatter={(label) => `Mois: ${label}`}
             />
-            <ReferenceArea
-              x1={format(new Date(), 'MMM', { locale: fr })}
-              x2={format(new Date(), 'MMM', { locale: fr })}
-              strokeOpacity={0.3}
+            <ReferenceArea 
+              x1={format(new Date(), 'MMM', { locale: fr })} 
+              x2={format(new Date(), 'MMM', { locale: fr })} 
+              strokeOpacity={0.3} 
               fill="#27272a"
             />
-            <Area
-              type="monotone"
-              dataKey="actual"
+            <Area 
+              type="monotone" 
+              dataKey="actual" 
               name="Réel"
-              stroke="#3b82f6"
-              fillOpacity={1}
-              fill="url(#colorActual)"
+              stroke="#3b82f6" 
+              fillOpacity={1} 
+              fill="url(#colorActual)" 
               strokeWidth={2}
             />
-            <Line
-              type="monotone"
-              dataKey="target"
+            <Line 
+              type="monotone" 
+              dataKey="target" 
               name="Objectif"
-              stroke="#10b981"
-              strokeDasharray="5 5"
+              stroke="#10b981" 
+              strokeDasharray="5 5" 
               dot={false}
               strokeWidth={1.5}
             />
-            <Line
-              type="monotone"
-              dataKey="cumulative"
+            <Line 
+              type="monotone" 
+              dataKey="cumulative" 
               name="Cumulé"
-              stroke="#f59e0b"
+              stroke="#f59e0b" 
               dot={{ r: 2, fill: '#f59e0b' }}
               strokeWidth={1}
               opacity={0.5}
