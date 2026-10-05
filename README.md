@@ -1,6 +1,6 @@
 # Trade Pulse
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/Zgoubnight/tradepulse-professional-trading-journal)
 
 Trade Pulse is a modern, full-stack trading dashboard application powered by Cloudflare Workers and Pages. It features a responsive React frontend with a sleek shadcn/ui design system, real-time data handling, dark mode support, and a scalable Hono-based API backend. Built for performance and scalability, it leverages Cloudflare's edge network for lightning-fast global delivery.
 
@@ -103,7 +103,7 @@ This runs `vite build` for static assets and `wrangler deploy` for the Worker.
 1. **Static Assets**: `bun build` → Upload `dist/` to Cloudflare Pages
 2. **Worker**: `wrangler deploy` (binds ASSETS to Pages assets)
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/Zgoubnight/tradepulse-professional-trading-journal)
 
 Configure `wrangler.jsonc` for custom bindings (KV, D1, DOs):
 ```jsonc
